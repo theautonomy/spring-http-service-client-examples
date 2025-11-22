@@ -99,6 +99,15 @@ public class JsonPlaceholderTestRunner implements CommandLineRunner {
         jsonPlaceholderClient.deletePost(1L);
         System.out.println("   Post deleted successfully");
 
+        // Test 10: Test error handling (request non-existent resource)
+        System.out.println("\n10. Testing error handling (requesting non-existent post):");
+        try {
+            jsonPlaceholderClient.getPostById(99999L);
+        } catch (Exception e) {
+            System.out.println("   Error caught: " + e.getClass().getSimpleName());
+            System.out.println("   Message: " + e.getMessage());
+        }
+
         System.out.println("\n=== All JSONPlaceholder tests completed! ===\n");
 
         // ===== Restful API Dev Tests =====

@@ -18,6 +18,12 @@ public class HttpClientConfig {
     @Bean
     public RestClientHttpServiceGroupConfigurer groupConfigurer() {
         return groups -> {
+            groups.filterByName("jph")
+                    .forEachClient(
+                            (group, clientBuilder) -> {
+                                clientBuilder.defaultStatusHandler(new CustomErrorHandler());
+                            });
+
             groups.filterByName("ara")
                     .forEachClient(
                             (group, clientBuilder) -> {
