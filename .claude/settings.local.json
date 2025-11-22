@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:spring.io)",
+      "Bash(./mvnw spring-boot:run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
