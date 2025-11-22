@@ -175,6 +175,24 @@ public class JsonPlaceholderTestRunner implements CommandLineRunner {
         restfulApiClient.deleteObject(createdObject.id());
         System.out.println("   Object deleted successfully");
 
-        System.out.println("\n=== All tests completed successfully! ===\n");
+        System.out.println("\n=== All Restful-API.dev tests completed! ===\n");
+
+        // ===== GitHub User Service Tests =====
+        System.out.println("\n=== GitHub User Service (OAuth2) ===\n");
+        System.out.println(
+                "   GitHub OAuth2 requires browser-based authentication (Authorization Code flow).");
+        System.out.println(
+                "   OAuth2 cannot be tested in CommandLineRunner without a web context.\n");
+        System.out.println("   To test GitHub OAuth2 integration:");
+        System.out.println(
+                "   1. Make sure your OAuth2 credentials are configured in application.properties");
+        System.out.println("   2. Start the application (it should be running now)");
+        System.out.println(
+                "   3. Open your browser and visit: http://localhost:8080/api/github/user");
+        System.out.println("   4. You'll be redirected to GitHub to authorize");
+        System.out.println("   5. After authorization, you'll see your GitHub user info\n");
+        System.out.println("=== GitHub OAuth2 endpoint available at /api/github/user ===\n");
+
+        System.out.println("\n=== All tests completed! ===\n");
     }
 }

@@ -5,6 +5,12 @@ import com.example.demo.client.jph.JsonPlaceholderClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.client.support.OAuth2RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.ImportHttpServices;
 
@@ -13,6 +19,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
         group = "jph",
         types = {JsonPlaceholderClient.class})
 // @ImportHttpServices( group = "ara", types = {RestfulApiClient.class})
+@ImportHttpServices(group = "github", basePackages = "com.example.demo.client.github")
 @Import(MyHttpServiceRegistrar.class)
 public class HttpClientConfig {
     @Bean
@@ -29,6 +36,39 @@ public class HttpClientConfig {
                             (group, clientBuilder) -> {
                                 clientBuilder.requestInterceptor(new LoggingInterceptor());
                             });
+
+            groups.filterByName("github")
+                    .forEachClient(
+                            (group, builder) ->
+                                    builder.baseUrl("https://api.github.com")
+                                            .defaultHeader(
+                                                    "Accept", "application/vnd.github.v3+json"));
         };
+    }
+
+    @Bean
+    OAuth2RestClientHttpServiceGroupConfigurer securityConfigurer(
+            OAuth2AuthorizedClientManager manager) {
+        return OAuth2RestClientHttpServiceGroupConfigurer.from(manager);
+    }
+
+    // @Bean
+    OAuth2RestClientHttpServiceGroupConfigurer securityConfigurer(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientService authorizedClientService) {
+
+        var authorizedClientProvider =
+                OAuth2AuthorizedClientProviderBuilder.builder()
+                        .authorizationCode()
+                        .refreshToken()
+                        .clientCredentials()
+                        .build();
+
+        var authorizedClientManager =
+                new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                        clientRegistrationRepository, authorizedClientService);
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+
+        return OAuth2RestClientHttpServiceGroupConfigurer.from(authorizedClientManager);
     }
 }
