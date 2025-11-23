@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.client.jph.JsonPlaceholderClient;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +14,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.client.support.OAuth2RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.ImportHttpServices;
-
-import com.example.demo.client.jph.JsonPlaceholderClient;
 
 @Configuration
 @ImportHttpServices(
@@ -31,7 +31,8 @@ public class HttpClientConfig {
     private String httpbinPassword;
 
     @Bean
-    public RestClientHttpServiceGroupConfigurer groupConfigurer() {
+    public RestClientHttpServiceGroupConfigurer groupConfigurer(
+            OAuth2AuthorizedClientManager authorizedClientManager) {
         return groups -> {
             groups.filterByName("jph")
                     // Allow further filtering of client withing the group
@@ -54,14 +55,15 @@ public class HttpClientConfig {
                                 clientBuilder.requestInterceptor(new LoggingInterceptor());
                             });
 
-            /*
             groups.filterByName("github")
                     .forEachClient(
-                            (group, builder) ->
-                                    builder.baseUrl("https://api.github.com")
-                                            .defaultHeader(
-                                                    "Accept", "application/vnd.github.v3+json"));
-            */
+                            (group, clientBuilder) -> {
+                                // Add OAuth2 interceptor for GitHub
+                                var oauth2Interceptor =
+                                        new OAuth2ClientInterceptor(
+                                                authorizedClientManager, "github");
+                                clientBuilder.requestInterceptor(oauth2Interceptor);
+                            });
 
             groups.filterByName("httpbin")
                     .forEachClient(
