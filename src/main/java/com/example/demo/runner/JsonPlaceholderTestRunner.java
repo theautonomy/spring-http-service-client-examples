@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.demo.client.ara.RestfulApiClient;
+import com.example.demo.client.httpbin.HttpBinClient;
 import com.example.demo.client.jph.JsonPlaceholderClient;
 import com.example.demo.model.ApiObject;
 import com.example.demo.model.ApiObjectRequest;
+import com.example.demo.model.BasicAuthResponse;
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
@@ -19,11 +21,15 @@ public class JsonPlaceholderTestRunner implements CommandLineRunner {
 
     private final JsonPlaceholderClient jsonPlaceholderClient;
     private final RestfulApiClient restfulApiClient;
+    private final HttpBinClient httpBinClient;
 
     public JsonPlaceholderTestRunner(
-            JsonPlaceholderClient jsonPlaceholderClient, RestfulApiClient restfulApiClient) {
+            JsonPlaceholderClient jsonPlaceholderClient,
+            RestfulApiClient restfulApiClient,
+            HttpBinClient httpBinClient) {
         this.jsonPlaceholderClient = jsonPlaceholderClient;
         this.restfulApiClient = restfulApiClient;
+        this.httpBinClient = httpBinClient;
     }
 
     @Override
@@ -176,6 +182,25 @@ public class JsonPlaceholderTestRunner implements CommandLineRunner {
         System.out.println("   Object deleted successfully");
 
         System.out.println("\n=== All Restful-API.dev tests completed! ===\n");
+
+        // ===== HTTP Basic Authentication Test =====
+        System.out.println("\n=== Testing HTTP Basic Authentication ===\n");
+        System.out.println("   Testing httpbin.org basic auth endpoint with credentials:");
+        System.out.println("   Username: mark");
+        System.out.println("   Password: secret\n");
+
+        // Test: HTTP Basic Authentication
+        System.out.println("1. Calling /basic-auth/mark/secret with HTTP Basic Auth:");
+        try {
+            BasicAuthResponse authResponse = httpBinClient.testBasicAuth("mark", "secret");
+            System.out.println("   ✓ Authentication successful!");
+            System.out.println("   Authenticated: " + authResponse.authenticated());
+            System.out.println("   User: " + authResponse.user());
+        } catch (Exception e) {
+            System.out.println("   ✗ Authentication failed: " + e.getMessage());
+        }
+
+        System.out.println("\n=== HTTP Basic Authentication test completed! ===\n");
 
         // ===== GitHub User Service Tests =====
         System.out.println("\n=== GitHub User Service (OAuth2) ===\n");

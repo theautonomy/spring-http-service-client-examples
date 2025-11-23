@@ -17,16 +17,22 @@
 * Configure OAuth2 client in application.properties
 * Use OAuth2RestClientHttpServiceGroupConfigurer 
 
+== Client fo service protected by HTTP basic authentication
+
 == Global configuration
 * Timeouts
 * HTTP factory choice (Apache HTTP Component, Jetty, JDK)
 
 == Todo
 
-=== Call service protected by HTTP basic authentication
+=== Usage example of HttpServiceProxyRegistry if there are multiple client proxies of the same type 
+* See details from https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-service-client
 
-=== Usage example using HttpServiceProxyRegistry 
+=== Use RestClientCustomizer for global RestClient customization 
 
-=== Use HttpServiceArgumentResolver 
+== Others
 
-=== Use HttpServiceArgumentResolver for RestClient customization 
+=== Usage example of HttpServiceArgumentResolver 
+* See https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-service-client.custom-resolver
+* See branch "custom-argument-resolver"
+* May use default method as shown in https://github.com/rstoyanchev/springio25-service-registry/blob/github-user/src/main/java/demo/github/service/IssueService.java#L40
