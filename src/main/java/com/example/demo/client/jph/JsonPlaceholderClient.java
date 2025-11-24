@@ -41,4 +41,12 @@ public interface JsonPlaceholderClient {
 
     @GetExchange("/users/{userId}/posts")
     List<Post> getPostsByUserId(@PathVariable Long userId);
+
+    default User getUser(Long userId) {
+        return getUserById(userId);
+    }
+
+    default List<Post> getPosts(Long userId) {
+        return getPostsByUserId(userId);
+    }
 }

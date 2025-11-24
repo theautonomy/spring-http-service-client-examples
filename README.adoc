@@ -30,6 +30,10 @@
 
 === Versioning example
 
+=== Default methods in http client interface for API convenience
+
+=== Not using for @ClientRegistrationId for OAuth2 client configuration
+
 == Todo
 
 === Usage example of HttpServiceProxyRegistry if there are multiple client proxies of the same type 
