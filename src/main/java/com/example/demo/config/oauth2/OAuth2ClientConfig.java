@@ -3,6 +3,7 @@ package com.example.demo.config.oauth2;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.security.oauth2.client.autoconfigure.ConditionalOnOAuth2ClientRegistrationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -15,7 +16,7 @@ import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpReq
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 
 @Configuration
-@ConditionalOnOAuth2ClientRegistration
+@ConditionalOnOAuth2ClientRegistrationProperties
 public class OAuth2ClientConfig {
 
     @Bean
