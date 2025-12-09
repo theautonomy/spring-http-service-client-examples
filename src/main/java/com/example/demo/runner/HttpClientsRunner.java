@@ -14,13 +14,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JsonPlaceholderTestRunner implements CommandLineRunner {
+public class HttpClientsRunner implements CommandLineRunner {
 
     private final JsonPlaceholderClient jsonPlaceholderClient;
     private final RestfulApiClient restfulApiClient;
     private final HttpBinClient httpBinClient;
 
-    public JsonPlaceholderTestRunner(
+    public HttpClientsRunner(
             JsonPlaceholderClient jsonPlaceholderClient,
             RestfulApiClient restfulApiClient,
             HttpBinClient httpBinClient) {

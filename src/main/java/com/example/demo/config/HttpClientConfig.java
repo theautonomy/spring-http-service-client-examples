@@ -62,6 +62,8 @@ public class HttpClientConfig {
                                                                         httpbinUsername,
                                                                         httpbinPassword)));
 
+                                // clientBuilder.requestInterceptor(new LoggingInterceptor());
+
                                 // Custom message converter for text/plain and text/html
                                 clientBuilder.configureMessageConverters(
                                         (builder) -> {
