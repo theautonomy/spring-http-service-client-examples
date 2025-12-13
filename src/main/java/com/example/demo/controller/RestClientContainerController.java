@@ -81,6 +81,35 @@ public class RestClientContainerController {
         return result;
     }
 
+    @GetMapping("/test-version/{name}/{version}/{*path}")
+    public Map<String, Object> testWithVersion(
+            @PathVariable String name, @PathVariable String version, @PathVariable String path) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("client", name);
+        result.put("path", path);
+        result.put("apiVersion", version);
+
+        try {
+            if (!restClients.contains(name)) {
+                result.put("status", "error");
+                result.put("message", "Client not found: " + name);
+                return result;
+            }
+
+            RestClient client = restClients.get(name);
+            String response =
+                    client.get().uri(path).apiVersion(version).retrieve().body(String.class);
+
+            result.put("status", "success");
+            result.put("response", truncate(response, 500));
+        } catch (Exception e) {
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+
+        return result;
+    }
+
     @GetMapping("/test-builder/{name}")
     public Map<String, Object> testBuilder(@PathVariable String name) {
         Map<String, Object> result = new LinkedHashMap<>();
