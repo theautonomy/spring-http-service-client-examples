@@ -238,6 +238,143 @@ HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle)
     .withTimeouts(Duration.ofSeconds(5), Duration.ofSeconds(10));
 ```
 
+### How Default Headers and API Version Are Applied
+
+Given this configuration:
+```properties
+spring.http.serviceclient.jph.base-url=https://jsonplaceholder.typicode.com
+spring.http.serviceclient.jph.default-header.Accept=application/json
+spring.http.serviceclient.jph.default-header.Content-Type=application/json
+spring.http.serviceclient.jph.apiversion.default-version=1.0
+spring.http.serviceclient.jph.apiversion.insert.header=X-API-VERSION
+spring.http.serviceclient.jph.read-timeout=1000
+spring.http.serviceclient.jph.connect-timeout=1000
+```
+
+Spring Boot configures the RestClient like this:
+
+```
+HttpClientProperties (from spring.http.serviceclient.jph.*)
+        │
+        │ defaultHeader: {Accept=[application/json], Content-Type=[application/json]}
+        │ apiversion.defaultVersion: "1.0"
+        │ apiversion.insert.header: "X-API-VERSION"
+        ▼
+┌─────────────────────────────────────────────────────────┐
+│  RestClient.Builder configuration:                      │
+│                                                         │
+│  restClientBuilder.clone()                              │
+│    .baseUrl("https://jsonplaceholder.typicode.com")     │
+│    .defaultHeaders(headers -> {                         │
+│                                                         │
+│        // 1. Add default headers from properties        │
+│        properties.getDefaultHeader()                    │
+│            .forEach((name, values) ->                   │
+│                values.forEach(v -> headers.add(name,v)) │
+│            );                                           │
+│                                                         │
+│        // 2. Add API version header                     │
+│        String headerName = properties.getApiversion()   │
+│            .getInsert().getHeader();  // X-API-VERSION  │
+│        String version = properties.getApiversion()      │
+│            .getDefaultVersion();      // 1.0            │
+│        headers.add(headerName, version);                │
+│                                                         │
+│    })                                                   │
+│    .requestFactory(factoryWithTimeouts)                 │
+│    .build();                                            │
+└─────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────────────────┐
+│  Every request from jphClient now has:                  │
+│                                                         │
+│  GET /posts HTTP/1.1                                    │
+│  Host: jsonplaceholder.typicode.com                     │
+│  Accept: application/json                               │
+│  Content-Type: application/json                         │
+│  X-API-VERSION: 1.0                                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+Code equivalent of what Spring Boot does internally:
+
+```java
+RestClient restClient = restClientBuilder.clone()
+    .baseUrl("https://jsonplaceholder.typicode.com")
+    .defaultHeaders(headers -> {
+        // Default headers from properties
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
+
+        // API version header
+        headers.add("X-API-VERSION", "1.0");
+    })
+    .requestFactory(clientHttpRequestFactoryBuilder.build(
+        HttpClientSettings.defaults()
+            .withConnectTimeout(Duration.ofMillis(1000))
+            .withReadTimeout(Duration.ofMillis(1000))
+    ))
+    .build();
+```
+
+The key method is `defaultHeaders(Consumer<HttpHeaders>)` on `RestClient.Builder` - these headers are added to **every** request made by this client automatically.
+
+### API Version Insert Options
+
+Spring Boot 4 supports multiple ways to insert API versions into HTTP requests:
+
+| Option | Property | Example Request |
+|--------|----------|-----------------|
+| **Header** | `apiversion.insert.header=X-API-VERSION` | `X-API-VERSION: 1.0` |
+| **Query Parameter** | `apiversion.insert.query-param=version` | `?version=1.0` |
+| **Path Segment** | `apiversion.insert.path-segment=1` | `/api/v1.0/users` |
+| **Media Type** | `apiversion.insert.media-type-parameter=version` | `Accept: application/json;version=1.0` |
+
+#### Header-based
+```properties
+spring.http.serviceclient.jph.apiversion.default-version=1.0
+spring.http.serviceclient.jph.apiversion.insert.header=X-API-VERSION
+```
+Result: `X-API-VERSION: 1.0` header added to requests
+
+#### Query Parameter-based
+```properties
+spring.http.serviceclient.jph.apiversion.default-version=1.0
+spring.http.serviceclient.jph.apiversion.insert.query-param=version
+```
+Result: `?version=1.0` appended to URL
+
+#### Path Segment-based
+```properties
+spring.http.serviceclient.jph.apiversion.default-version=1.0
+spring.http.serviceclient.jph.apiversion.insert.path-segment=1
+```
+Result: Version inserted at path position 1: `/api/1.0/users`
+
+#### Media Type-based
+```properties
+spring.http.serviceclient.jph.apiversion.default-version=1.0
+spring.http.serviceclient.jph.apiversion.insert.media-type-parameter=version
+```
+Result: `Accept: application/json;version=1.0`
+
+#### Programmatic Equivalent (ApiVersionInserter)
+
+```java
+// Header
+ApiVersionInserter.fromHeader("X-API-VERSION").build()
+
+// Query param
+ApiVersionInserter.fromQueryParam("version").build()
+
+// Path segment
+ApiVersionInserter.fromPathSegment(1).build()
+
+// Media type
+ApiVersionInserter.fromMediaTypeParameter("version").build()
+```
+
 ### Why Clone the Builder?
 
 The auto-configured `RestClient.Builder` may have:
