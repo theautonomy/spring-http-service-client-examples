@@ -3,6 +3,17 @@ package com.example.demo.config.restclient;
 public class ClientAuthProperties {
 
     private Authentication authentication;
+    private String apiVersionDefault; // Workaround for Spring Boot binding issue with
+
+    // apiversion.defaultVersion
+
+    public String getApiVersionDefault() {
+        return apiVersionDefault;
+    }
+
+    public void setApiVersionDefault(String apiVersionDefault) {
+        this.apiVersionDefault = apiVersionDefault;
+    }
 
     public Authentication getAuthentication() {
         return authentication;

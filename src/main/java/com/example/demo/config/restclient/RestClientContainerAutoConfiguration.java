@@ -2,17 +2,19 @@ package com.example.demo.config.restclient;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
 import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
 
 @Configuration
@@ -23,7 +25,7 @@ public class RestClientContainerAutoConfiguration {
     @ConditionalOnMissingBean
     public RestClientContainer restClientContainer(
             RestClient.Builder restClientBuilder,
-            ClientHttpRequestFactoryBuilder requestFactoryBuilder,
+            ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
             HttpServiceClientProperties httpServiceClientProperties,
             ServiceClientAuthProperties authProperties,
             @Nullable OAuth2AuthorizedClientManager authorizedClientManager) {
@@ -66,7 +68,7 @@ public class RestClientContainerAutoConfiguration {
     private RestClient.Builder configureBuilder(
             String name,
             RestClient.Builder builder,
-            ClientHttpRequestFactoryBuilder requestFactoryBuilder,
+            ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
             HttpClientProperties clientProps,
             @Nullable ClientAuthProperties authProps,
             @Nullable OAuth2AuthorizedClientManager authorizedClientManager) {
@@ -89,21 +91,8 @@ public class RestClientContainerAutoConfiguration {
                     });
         }
 
-        // 3. Add API version header if configured
-        if (clientProps.getApiversion() != null) {
-            var apiversion = clientProps.getApiversion();
-            if (apiversion.getDefaultVersion() != null && apiversion.getInsert() != null) {
-                var insert = apiversion.getInsert();
-                if (insert.getHeader() != null) {
-                    builder.defaultHeaders(
-                            headers -> {
-                                headers.add(insert.getHeader(), apiversion.getDefaultVersion());
-                            });
-                }
-                // TODO: Support other API version insert types (query-param, path-segment,
-                // media-type)
-            }
-        }
+        // 3. Configure API versioning using ApiVersionInserter
+        configureApiVersion(builder, clientProps, authProps);
 
         // 4. Build ClientHttpRequestFactory with timeouts
         HttpClientSettings settings = buildHttpClientSettings(clientProps);
@@ -115,6 +104,63 @@ public class RestClientContainerAutoConfiguration {
         configureAuthentication(name, builder, authProps, authorizedClientManager);
 
         return builder;
+    }
+
+    private void configureApiVersion(
+            RestClient.Builder builder,
+            HttpClientProperties clientProps,
+            @Nullable ClientAuthProperties authProps) {
+        if (clientProps.getApiversion() == null) {
+            return;
+        }
+
+        var apiversion = clientProps.getApiversion();
+        var insert = apiversion.getInsert();
+
+        if (insert == null) {
+            return;
+        }
+
+        // Get default version from our custom properties (workaround for Spring Boot binding issue)
+        String defaultVersion = (authProps != null) ? authProps.getApiVersionDefault() : null;
+
+        if (defaultVersion == null) {
+            return;
+        }
+
+        // Set the default version
+        builder.defaultApiVersion(defaultVersion);
+
+        // Create the appropriate ApiVersionInserter based on insert type
+        ApiVersionInserter inserter = createApiVersionInserter(insert);
+        if (inserter != null) {
+            builder.apiVersionInserter(inserter);
+        }
+    }
+
+    @Nullable
+    private ApiVersionInserter createApiVersionInserter(ApiversionProperties.Insert insert) {
+        // Header-based: X-API-VERSION: 1.0
+        if (insert.getHeader() != null) {
+            return ApiVersionInserter.useHeader(insert.getHeader());
+        }
+
+        // Query parameter-based: ?version=1.0
+        if (insert.getQueryParameter() != null) {
+            return ApiVersionInserter.useQueryParam(insert.getQueryParameter());
+        }
+
+        // Path segment-based: /api/v1.0/users
+        if (insert.getPathSegment() != null) {
+            return ApiVersionInserter.usePathSegment(insert.getPathSegment());
+        }
+
+        // Media type parameter-based: Accept: application/json;version=1.0
+        if (insert.getMediaTypeParameter() != null) {
+            return ApiVersionInserter.useMediaTypeParam(insert.getMediaTypeParameter());
+        }
+
+        return null;
     }
 
     @Nullable

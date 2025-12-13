@@ -1,15 +1,16 @@
 demoApplication - com.example.demo.DemoApplication
-groupConfigurer - com.example.demo.config.HttpClientConfig$$Lambda/0x00000143e062b230
+groupConfigurer - com.example.demo.config.HttpClientConfig$$Lambda/0x0000025101632d50
 httpClientConfig - com.example.demo.config.HttpClientConfig$$SpringCGLIB$$0
 httpServiceConfigExample - com.example.demo.config.HttpServiceConfigExample$$SpringCGLIB$$0
 securityConfig - com.example.demo.config.SecurityConfig$$SpringCGLIB$$0
-groupConfigurerForOAuth2 - com.example.demo.config.oauth2.OAuth2ClientConfig$$Lambda/0x00000143e063d310
+groupConfigurerForOAuth2 - com.example.demo.config.oauth2.OAuth2ClientConfig$$Lambda/0x0000025101642a60
 OAuth2ClientConfig - com.example.demo.config.oauth2.OAuth2ClientConfig$$SpringCGLIB$$0
 restClientContainer - com.example.demo.config.restclient.DefaultRestClientContainer
 restClientContainerAutoConfiguration - com.example.demo.config.restclient.RestClientContainerAutoConfiguration$$SpringCGLIB$$0
 serviceclient-com.example.demo.config.restclient.ServiceClientAuthProperties - com.example.demo.config.restclient.ServiceClientAuthProperties
 githubController - com.example.demo.controller.GithubController
 restClientContainerController - com.example.demo.controller.RestClientContainerController
+apiVersionDebugRunner - com.example.demo.runner.ApiVersionDebugRunner
 beanListRunner - com.example.demo.runner.BeanListRunner
 restClientContainerRunner - com.example.demo.runner.RestClientContainerRunner
 multipartConfigElement - jakarta.servlet.MultipartConfigElement
@@ -28,7 +29,7 @@ defaultServletHandlerMapping - org.springframework.beans.factory.support.NullBea
 org.springframework.boot.autoconfigure.AutoConfigurationPackages - org.springframework.boot.autoconfigure.AutoConfigurationPackages$BasePackages
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration - org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration - org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration
-forceAutoProxyCreatorToUseClassProxying - org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration$$Lambda/0x00000143e0624030
+forceAutoProxyCreatorToUseClassProxying - org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration$$Lambda/0x0000025101628218
 org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration - org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration
 org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration - org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
 org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration - org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration
@@ -45,7 +46,7 @@ spring.task.execution-org.springframework.boot.autoconfigure.task.TaskExecutionP
 applicationTaskExecutorAsyncConfigurer - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$ApplicationTaskExecutorAsyncConfigurer
 org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$AsyncConfigurerConfiguration - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$AsyncConfigurerConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$BootstrapExecutorConfiguration - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$BootstrapExecutorConfiguration
-bootstrapExecutorAliasPostProcessor - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$BootstrapExecutorConfiguration$$Lambda/0x00000143e0623e18
+bootstrapExecutorAliasPostProcessor - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$BootstrapExecutorConfiguration$$Lambda/0x0000025101628000
 org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$SimpleAsyncTaskExecutorBuilderConfiguration - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$SimpleAsyncTaskExecutorBuilderConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$TaskExecutorConfiguration - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$TaskExecutorConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$ThreadPoolTaskExecutorBuilderConfiguration - org.springframework.boot.autoconfigure.task.TaskExecutorConfigurations$ThreadPoolTaskExecutorBuilderConfiguration
@@ -60,7 +61,7 @@ org.springframework.boot.context.properties.BoundConfigurationProperties - org.s
 org.springframework.boot.context.internalConfigurationPropertiesBinder - org.springframework.boot.context.properties.ConfigurationPropertiesBinder
 org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor - org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor
 httpClientSettings - org.springframework.boot.http.client.HttpClientSettings
-clientHttpRequestFactoryBuilder - org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder
+clientHttpRequestFactoryBuilder - org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder
 org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration - org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration
 spring.http.clients-org.springframework.boot.http.client.autoconfigure.HttpClientsProperties - org.springframework.boot.http.client.autoconfigure.HttpClientsProperties
 org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration - org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration
@@ -122,7 +123,7 @@ server.tomcat-org.springframework.boot.tomcat.autoconfigure.TomcatServerProperti
 org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration - org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration
 tomcatServletWebServerFactoryCustomizer - org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerFactoryCustomizer
 tomcatServletWebServerFactory - org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory
-org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar.methodValidationExcludeFilter - org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda/0x00000143e041fd78
+org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar.methodValidationExcludeFilter - org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda/0x00000251014238d0
 errorPageRegistrarBeanPostProcessor - org.springframework.boot.web.error.ErrorPageRegistrarBeanPostProcessor
 webServerFactoryCustomizerBeanPostProcessor - org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor
 server-org.springframework.boot.web.server.autoconfigure.ServerProperties - org.springframework.boot.web.server.autoconfigure.ServerProperties
@@ -155,7 +156,7 @@ org.springframework.context.event.internalEventListenerProcessor - org.springfra
 lifecycleProcessor - org.springframework.context.support.DefaultLifecycleProcessor
 propertySourcesPlaceholderConfigurer - org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory - org.springframework.core.type.classreading.CachingMetadataReaderFactory
-clientHttpRequestFactory - org.springframework.http.client.JettyClientHttpRequestFactory
+clientHttpRequestFactory - org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 stringHttpMessageConverter - org.springframework.http.converter.StringHttpMessageConverter
 jacksonJsonHttpMessageConverter - org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 applicationTaskExecutor - org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
