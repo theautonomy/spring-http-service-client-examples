@@ -1,11 +1,15 @@
 package com.example.demo.runner;
 
+import java.util.List;
+import java.util.Map;
+
 import com.example.demo.client.ara.RestfulApiClient;
+import com.example.demo.model.ApiObject;
+import com.example.demo.model.ApiObjectRequest;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class RestfulApiRunner implements CommandLineRunner {
 
     private final RestfulApiClient restfulApiClient;
@@ -16,7 +20,6 @@ public class RestfulApiRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        /*
         System.out.println("\n=== Testing Restful-API.dev HTTP Service Client ===\n");
 
         // Test 1: Get all objects (limited to first 5)
@@ -82,6 +85,5 @@ public class RestfulApiRunner implements CommandLineRunner {
         System.out.println("   Object deleted successfully");
 
         System.out.println("\n=== All Restful-API.dev tests completed! ===\n");
-        */
     }
 }

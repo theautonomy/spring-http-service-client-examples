@@ -8,9 +8,8 @@ import com.example.demo.model.Post;
 import com.example.demo.model.User;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class JsonPlaceholderRunner implements CommandLineRunner {
 
     private final JsonPlaceholderClient jsonPlaceholderClient;

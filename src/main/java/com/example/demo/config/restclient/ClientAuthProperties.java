@@ -2,29 +2,29 @@ package com.example.demo.config.restclient;
 
 public class ClientAuthProperties {
 
-    private String authentication; // "basic", "oauth2", or null (no auth)
-    private Authentication authenticationDetails = new Authentication();
+    private Authentication authentication;
 
-    public String getAuthentication() {
+    public Authentication getAuthentication() {
         return authentication;
     }
 
-    public void setAuthentication(String authentication) {
+    public void setAuthentication(Authentication authentication) {
         this.authentication = authentication;
     }
 
-    public Authentication getAuthenticationDetails() {
-        return authenticationDetails;
-    }
-
-    public void setAuthenticationDetails(Authentication authenticationDetails) {
-        this.authenticationDetails = authenticationDetails;
-    }
-
     public static class Authentication {
+        private String type; // "basic", "oauth2", "bearer", or null (no auth)
         private BasicAuth basic;
         private OAuth2Auth oauth2;
         private BearerAuth bearer;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
 
         public BasicAuth getBasic() {
             return basic;

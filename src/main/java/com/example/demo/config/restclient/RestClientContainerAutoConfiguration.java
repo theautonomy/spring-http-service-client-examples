@@ -33,21 +33,37 @@ public class RestClientContainerAutoConfiguration {
         // Iterate over each service client defined in spring.http.serviceclient.*
         httpServiceClientProperties.forEach(
                 (name, clientProps) -> {
+                    ClientAuthProperties authProps = authProperties.get(name);
+
+                    // Register builder supplier (creates a fresh configured builder each time)
+                    container.registerBuilderSupplier(
+                            name,
+                            () ->
+                                    configureBuilder(
+                                            name,
+                                            restClientBuilder.clone(),
+                                            requestFactoryBuilder,
+                                            clientProps,
+                                            authProps,
+                                            authorizedClientManager));
+
+                    // Register pre-built RestClient
                     RestClient client =
-                            buildRestClient(
-                                    name,
-                                    restClientBuilder.clone(),
-                                    requestFactoryBuilder,
-                                    clientProps,
-                                    authProperties.get(name),
-                                    authorizedClientManager);
+                            configureBuilder(
+                                            name,
+                                            restClientBuilder.clone(),
+                                            requestFactoryBuilder,
+                                            clientProps,
+                                            authProps,
+                                            authorizedClientManager)
+                                    .build();
                     container.register(name, client);
                 });
 
         return container;
     }
 
-    private RestClient buildRestClient(
+    private RestClient.Builder configureBuilder(
             String name,
             RestClient.Builder builder,
             ClientHttpRequestFactoryBuilder requestFactoryBuilder,
@@ -98,7 +114,7 @@ public class RestClientContainerAutoConfiguration {
         // 5. Add authentication
         configureAuthentication(name, builder, authProps, authorizedClientManager);
 
-        return builder.build();
+        return builder;
     }
 
     @Nullable
@@ -130,25 +146,28 @@ public class RestClientContainerAutoConfiguration {
             return;
         }
 
-        String authType = authProps.getAuthentication();
+        var auth = authProps.getAuthentication();
+        if (auth.getType() == null) {
+            return;
+        }
 
-        switch (authType.toLowerCase()) {
-            case "basic" -> configureBasicAuth(builder, authProps);
-            case "oauth2" -> configureOAuth2Auth(name, builder, authProps, authorizedClientManager);
-            case "bearer" -> configureBearerAuth(builder, authProps);
+        switch (auth.getType().toLowerCase()) {
+            case "basic" -> configureBasicAuth(builder, auth);
+            case "oauth2" -> configureOAuth2Auth(name, builder, auth, authorizedClientManager);
+            case "bearer" -> configureBearerAuth(builder, auth);
             default -> {
                 // No authentication or unknown type
             }
         }
     }
 
-    private void configureBasicAuth(RestClient.Builder builder, ClientAuthProperties authProps) {
-        var authDetails = authProps.getAuthenticationDetails();
-        if (authDetails == null || authDetails.getBasic() == null) {
+    private void configureBasicAuth(
+            RestClient.Builder builder, ClientAuthProperties.Authentication auth) {
+        var basic = auth.getBasic();
+        if (basic == null) {
             return;
         }
 
-        var basic = authDetails.getBasic();
         if (basic.getUsername() != null && basic.getPassword() != null) {
             builder.defaultHeaders(
                     headers -> {
@@ -160,7 +179,7 @@ public class RestClientContainerAutoConfiguration {
     private void configureOAuth2Auth(
             String name,
             RestClient.Builder builder,
-            ClientAuthProperties authProps,
+            ClientAuthProperties.Authentication auth,
             @Nullable OAuth2AuthorizedClientManager authorizedClientManager) {
 
         if (authorizedClientManager == null) {
@@ -169,12 +188,11 @@ public class RestClientContainerAutoConfiguration {
                             + name);
         }
 
-        var authDetails = authProps.getAuthenticationDetails();
-        if (authDetails == null || authDetails.getOauth2() == null) {
+        var oauth2 = auth.getOauth2();
+        if (oauth2 == null) {
             return;
         }
 
-        var oauth2 = authDetails.getOauth2();
         String registrationId = oauth2.getRegistrationId();
         if (registrationId == null) {
             registrationId = name; // Default to service client name
@@ -186,13 +204,13 @@ public class RestClientContainerAutoConfiguration {
         builder.requestInterceptor(oauth2Interceptor);
     }
 
-    private void configureBearerAuth(RestClient.Builder builder, ClientAuthProperties authProps) {
-        var authDetails = authProps.getAuthenticationDetails();
-        if (authDetails == null || authDetails.getBearer() == null) {
+    private void configureBearerAuth(
+            RestClient.Builder builder, ClientAuthProperties.Authentication auth) {
+        var bearer = auth.getBearer();
+        if (bearer == null) {
             return;
         }
 
-        var bearer = authDetails.getBearer();
         if (bearer.getToken() != null) {
             builder.defaultHeaders(
                     headers -> {

@@ -16,6 +16,17 @@ public interface RestClientContainer {
     RestClient get(String name);
 
     /**
+     * Get a pre-configured RestClient.Builder by its service client name. The builder has all
+     * configuration applied (base-url, headers, timeouts, authentication) but is not yet built,
+     * allowing further customization.
+     *
+     * @param name the service client name (e.g., "github", "httpbin")
+     * @return a new RestClient.Builder with all configuration applied
+     * @throws IllegalArgumentException if no configuration exists with the given name
+     */
+    RestClient.Builder getBuilder(String name);
+
+    /**
      * Check if a RestClient with the given name exists.
      *
      * @param name the service client name

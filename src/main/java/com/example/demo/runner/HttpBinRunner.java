@@ -1,24 +1,40 @@
 package com.example.demo.runner;
 
 import com.example.demo.client.httpbin.HttpBinClient;
+import com.example.demo.config.restclient.RestClientContainer;
 import com.example.demo.model.BasicAuthResponse;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
-@Component
+// @Component
 public class HttpBinRunner implements CommandLineRunner {
 
     private final HttpBinClient thisClient;
+    private final RestClientContainer restClientContainer;
 
     // Since we have two HttpBinClient, we need to qualify it
-    public HttpBinRunner(@Qualifier("httpBinClient") HttpBinClient thisBinClient) {
+    public HttpBinRunner(
+            @Qualifier("httpBinClient") HttpBinClient thisBinClient,
+            RestClientContainer restClientContainer) {
         this.thisClient = thisBinClient;
+        this.restClientContainer = restClientContainer;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        RestClient restclient = restClientContainer.get("httpbin");
+
+        String response =
+                restclient
+                        .get()
+                        .uri("/get?name={name}&age={age}", "Jane", 25)
+                        .retrieve()
+                        .body(String.class);
+
+        System.out.println("response=" + response);
+
         // ===== HTTP Basic Authentication Test =====
         System.out.println("\n=== Testing HTTP Basic Authentication ===\n");
         System.out.println("   Testing httpbin.org basic auth endpoint with credentials:");
