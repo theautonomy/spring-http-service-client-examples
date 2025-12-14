@@ -257,4 +257,26 @@ public class RestClientContainerController {
 
         return result;
     }
+
+    @GetMapping("/test-jph-exchange-client-from-container/{postId}")
+    public Map<String, Object> testJphClientFromContainer(@PathVariable Long postId) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("method", "Using pre-built RestClient from container");
+        result.put("postId", postId);
+        result.put("expectedVersion", "2.0.0 (from @GetExchange annotation)");
+
+        try {
+            JsonPlaceholderClient jphClient =
+                    restClients.getHttpExchangeClient("jph", JsonPlaceholderClient.class);
+
+            Post post = jphClient.getPostById(postId);
+            result.put("status", "success");
+            result.put("post", post);
+        } catch (Exception e) {
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+
+        return result;
+    }
 }

@@ -40,4 +40,6 @@ public interface RestClientContainer {
      * @return set of service client names
      */
     Set<String> getNames();
+
+    <T> T getHttpExchangeClient(String string, Class<T> class1);
 }

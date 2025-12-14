@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 public class DefaultRestClientContainer implements RestClientContainer {
 
@@ -30,6 +32,13 @@ public class DefaultRestClientContainer implements RestClientContainer {
             throw new IllegalArgumentException("No RestClient.Builder found with name: " + name);
         }
         return supplier.get();
+    }
+
+    @Override
+    public <T> T getHttpExchangeClient(String name, Class<T> exchangeClientClass) {
+        return HttpServiceProxyFactory.builderFor(RestClientAdapter.create(get(name)))
+                .build()
+                .createClient(exchangeClientClass);
     }
 
     @Override
